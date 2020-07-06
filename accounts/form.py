@@ -9,11 +9,13 @@ class studentSignUpForm(UserCreationForm):
     #last_name = forms.CharField(required=True)
 
     class Meta(UserCreationForm.Meta):
+        #we are using our user authentication model named User
         model = User
 
-    @transaction.atomic
+    @transaction.atomic   #helps us to comit changes in the database
     def save(self):
-        user = super().save(commit=False)
+        user = super().save(commit=False)  #commit is set to false intially so that the user first name
+                                           #and second name can be cleaned first and then saved.
         user.is_student = True
         #can be added
         #user.first_name = self.cleaned_data.get('first_name')
@@ -24,10 +26,12 @@ class studentSignUpForm(UserCreationForm):
         return user
 
 class teacherSignUpForm(UserCreationForm):
+    #can be added
     #first_name = forms.CharField(required=True)
     #last_name = forms.CharField(required=True)
 
     class Meta(UserCreationForm.Meta):
+        #we are using our user authentication model named User
         model = User
 
     @transaction.atomic
