@@ -12,8 +12,8 @@ class User(AbstractUser):
     #last_name=models.CharField(max_length=100)
 
 class student(models.Model):
-    #one to one fields is an instruction to the database saying there will be
-    #only one user entry against one student entry.
+    #one to one fields is an instruction to the database saying there will be...
+    #...only one user entry against one student entry.
     #on_delete=models.Cascade means than the student entry will be deleted when the user entry is deleted
     #for more information visit https://www.geeksforgeeks.org/python-relational-fields-in-django-models/
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
