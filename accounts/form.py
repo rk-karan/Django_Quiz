@@ -1,10 +1,10 @@
-
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django.db import transaction
 from .models import User,student,teacher
 
 class studentSignUpForm(UserCreationForm):
+    #can be added
     #first_name = forms.CharField(required=True)
     #last_name = forms.CharField(required=True)
 
