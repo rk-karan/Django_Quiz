@@ -28,6 +28,21 @@ class signup_as_teacher(CreateView):  #CreateView creates an instance of the dat
         user = form.save()  #saving the information in the form in the database
         login(self.request, user)  #once registration is successful, the teacher is logged in
         return redirect('/accounts/teacher_home')  #redirecting to student home
+        
+def signin_done(request):
+    username = request.POST.get('login')
+    password = request.POST.get('password')
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        if user.is_active:
+            login(request, user)
+            if user.is_student:
+                return redirect('../student_home')
+            else:
+                return redirect('../teacher_home')
+    return render(request, 'accounts/signin.html')
+        
+        
 
 def signin(request):
     return render(request, 'accounts/signin.html')
