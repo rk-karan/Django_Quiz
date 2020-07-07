@@ -30,7 +30,24 @@ class signup_as_teacher(CreateView):  #CreateView creates an instance of the dat
         return redirect('/accounts/teacher_home')  #redirecting to student home
 
 def signin(request):
-    return render(request, 'accounts/signin.html')
+    if request.method=='POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid(): #is_valid will check if the entries are of consistent datatype (no null value accepted)
+            username = form.cleaned_data.get('username') #to get cleaned username
+            password = form.cleaned_data.get('password') #to get cleaned password
+            user = authenticate(username=username, password=password) #we are checking if the password and username are correct
+            #authenticate() returns none if password and username doesnt match
+            if user is not None : #if condition
+                login(request,user)
+                if user.is_student==True:
+                    return redirect('/accounts/student_home') #to student dashboard
+                else:
+                    return redirect('/accounts/teacher_home') #to teacher dashboard
+            else:
+                messages.error(request,"Invalid username or password") #ivalid message display
+        else:
+                messages.error(request,"Invalid username or password") #ivalid message display
+    return render(request, 'accounts/signin.html', context={'form':AuthenticationForm()})
 
 def signout(request):
     return render(request, 'accounts/home.html')
