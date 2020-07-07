@@ -1,0 +1,15 @@
+{%extends 'base.html'%}
+{%block content%}
+<div class="card-body">
+  <h3> Registering as Student </h3>
+  <br/>
+  <form action="{% url 'signup_as_student' %}" method="POST" novalidate>
+    {% csrf_token %}
+    <div class=“container”>
+      {{form}}
+      <br/>
+      <input type="submit" value="Register" class="btn btn-primary my-2">
+    </div>
+  </form>
+</div>
+{%endblock%}
