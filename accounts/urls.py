@@ -10,9 +10,6 @@ urlpatterns = [
 
 #signin page
     path('signin', views.signin, name='signin'),
-    
-#post signin page
-    path('signin/done', views.signin_done, name='done'),
 
 #signout
     path('signout', views.signout, name='signout'),
