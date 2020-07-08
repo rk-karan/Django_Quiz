@@ -50,6 +50,7 @@ def signin(request):
     return render(request, 'accounts/signin.html', context={'form':AuthenticationForm()})
 
 def signout(request):
+    logout(request)
     return render(request, 'accounts/home.html')
 
 def teacher_home(request):
