@@ -30,7 +30,7 @@ class signup_as_teacher(CreateView):  #CreateView creates an instance of the dat
         return redirect('/accounts/teacher_home')  #redirecting to student home
         
 def signin(request):
-    return render(request, 'accounts/signin.html')	    if request.method=='POST':
+    if request.method=='POST':
         form = AuthenticationForm(data=request.POST)
         if form.is_valid(): #is_valid will check if the entries are of consistent datatype (no null value accepted)
             username = form.cleaned_data.get('username') #to get cleaned username
