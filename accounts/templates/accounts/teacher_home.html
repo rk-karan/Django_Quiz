@@ -1,19 +1,26 @@
 {% extends 'base.html' %}
 {% block content %}
-{% for quiz in set %}
+<a href="{%url 'create_quiz'%}" class="btn btn-secondary my-2">Create A Quiz</a>
+<br></br>
+<div class="card-deck">
+	{% for quiz in set %}
 	{% if quiz.creator == user %}
-	<div class="col-md-4">
-		<div class="card mb-4 shadow-sm">
-			<div class="card-body">
-				<h4 class="card-title">{{quiz.quiz_name}}</h4>
-				<div class="d-flex justify-content-between align-items-center">
-						<p class="text-left">Topic: {{quiz.topic}}</p>
-						<p class="text-right">Maximum Marks: {{quiz.max_marks}}</p>
-				</div>
+	<div class="album py-5 bg-light">
+		<div class="container">
+			<div class="col-md-4">
+				<div class="card mb-4 shadow-sm" style="width: 18rem;">
+					<div class="card-body">
+						<h4 class="card-title">{{quiz.quiz_name}}</h4>
+						<div class="d-flex justify-content-between align-items-center">
+							<p class="text-left">Topic: {{quiz.topic}}</p>
+							<p class="text-right">Maximum Marks: {{quiz.max_marks}}</p>
+						</div>
+					</div>
 			</div>
 		</div>
 	</div>
-	{% endif %}
+</div>
+{% endif %}
 {% endfor %}
-	<a href="{%url 'create_quiz'%}" class="btn btn-secondary my-2">Create A Quiz</a>
+</div>
 {%endblock%}
