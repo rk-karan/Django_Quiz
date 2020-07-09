@@ -6,6 +6,8 @@ from .form import studentSignUpForm, teacherSignUpForm
 from django.contrib.auth.forms import AuthenticationForm
 from .models import User
 
+from .decorators import student_required, teacher_required
+
 def home(request):
     return render(request, 'accounts/home.html')
 
@@ -38,11 +40,14 @@ def signin(request):
             user = authenticate(username=username, password=password) #we are checking if the password and username are correct
             #authenticate() returns none if password and username doesnt match
             if user is not None : #if condition
-                login(request,user)
-                if user.is_student==True:
-                    return redirect('/accounts/student_home') #to student dashboard
+                if user.is_active:
+                    login(request,user)
+                    if user.is_student==True:
+                        return redirect('/accounts/student_home') #to student dashboard
+                    else:
+                        return redirect('/accounts/teacher_home') #to teacher dashboard
                 else:
-                    return redirect('/accounts/teacher_home') #to teacher dashboard
+                    messages.error(request,"User has been temporarily deactivated") #ivalid message display
             else:
                 messages.error(request,"Invalid username or password") #ivalid message display
         else:
@@ -53,8 +58,10 @@ def signout(request):
     logout(request)
     return render(request, 'accounts/home.html')
 
+@teacher_required
 def teacher_home(request):
     return render(request, 'accounts/teacher_home.html')
 
+@student_required
 def student_home(request):
     return render(request, 'accounts/student_home.html')
