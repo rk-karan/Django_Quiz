@@ -46,8 +46,8 @@ class teacherSignUpForm(UserCreationForm):
         Teacher = teacher.objects.create(user=user)
         Teacher.save()
         return user
-        
+
 class create_quiz(forms.ModelForm):
     class Meta:
         model = Quiz
-        fields = ('topic', 'max_score', )
+        fields = ('quiz_name', 'topic', 'max_marks', 'number_of_questions' )
