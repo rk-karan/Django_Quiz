@@ -17,7 +17,7 @@ class signup_as_student(CreateView):  #CreateView creates an instance of the dat
     template_name = 'accounts/signup_as_student.html' #template_name
 
     def form_valid(self, form):
-        user = form.save()
+        user = form.save() #saving the information in the form in the database
         login(self.request, user) #once registration is successful, the student is logged in
         return redirect('/accounts/student_home') #redirecting to student home
 
@@ -27,10 +27,10 @@ class signup_as_teacher(CreateView):  #CreateView creates an instance of the dat
     template_name = 'accounts/signup_as_teacher.html' #template_name
 
     def form_valid(self, form):
-        user = form.save()
+        user = form.save()  #saving the information in the form in the database
         login(self.request, user)  #once registration is successful, the teacher is logged in
         return redirect('/accounts/teacher_home')  #redirecting to student home
-
+        
 def signin(request):
     if request.method=='POST':
         form = AuthenticationForm(data=request.POST)
@@ -49,9 +49,9 @@ def signin(request):
                 else:
                     messages.error(request,"User has been temporarily deactivated") #ivalid message display
             else:
-                messages.error(request,"Invalid username or password") #ivalid message display
+                messages.error(request,"Invalid username or password") #invalid message display
         else:
-                messages.error(request,"Invalid username or password") #ivalid message display
+                messages.error(request,"Invalid username or password") #invalid message display
     return render(request, 'accounts/signin.html', context={'form':AuthenticationForm()})
 
 def signout(request):
@@ -60,12 +60,12 @@ def signout(request):
 
 @teacher_required
 def teacher_home(request):
-    return render(request, 'accounts/teacher_home.html', context = {'set':Quiz.objects.all()})      #passing variable set for accessing quizzes
+    return render(request, 'accounts/teacher_home.html', context = {'set':Quiz.objects.all()})
 
 @student_required
 def student_home(request):
-    return render(request, 'accounts/student_home.html')
-
+    return render(request, 'accounts/student_home.html', context = {'set':Quiz.objects.all()})
+    
 @teacher_required
 def create(request):
     if request.method=='POST':
