@@ -1,0 +1,15 @@
+{%extends 'base.html'%}
+{%block content%}
+	{% if user.is_authenticated %}
+		<p>
+			Nice to meet you {{user.username}}. See you again soon.
+			<a href="{%url 'signout'%}" class="btn btn-secondary my-2">Sign Out</a>
+		</p>
+	{% else %}
+        <p>
+			<a href="{%url 'signup_as_teacher'%}" class="btn btn-primary my-2">Register as Teacher</a>
+			<a href="{%url 'signup_as_student'%}" class="btn btn-primary my-2">Register as Student</a>
+			<a href="{%url 'signin'%}" class="btn btn-secondary my-2">Sign In</a>
+        </p>
+	{% endif %}
+{%endblock%}
