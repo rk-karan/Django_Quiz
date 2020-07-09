@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django.db import transaction
-from .models import User,student,teacher
+from .models import User,student,teacher, Quiz
 
 class studentSignUpForm(UserCreationForm):
     #can be added
@@ -46,3 +46,8 @@ class teacherSignUpForm(UserCreationForm):
         Teacher = teacher.objects.create(user=user)
         Teacher.save()
         return user
+        
+class create_quiz(forms.ModelForm):
+    class Meta:
+        model = Quiz
+        fields = ('topic', 'max_score', )
