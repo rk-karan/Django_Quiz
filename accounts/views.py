@@ -2,9 +2,9 @@ from django.contrib.auth import login, logout,authenticate
 from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.views.generic import CreateView
-from .form import studentSignUpForm, teacherSignUpForm
+from .form import studentSignUpForm, teacherSignUpForm, create_quiz
 from django.contrib.auth.forms import AuthenticationForm
-from .models import User
+from .models import User, Quiz
 
 from .decorators import student_required, teacher_required
 
@@ -60,8 +60,18 @@ def signout(request):
 
 @teacher_required
 def teacher_home(request):
-    return render(request, 'accounts/teacher_home.html')
+    return render(request, 'accounts/teacher_home.html', context = {'set':Quiz.objects.all()})      #passing variable set for accessing quizzes
 
 @student_required
 def student_home(request):
     return render(request, 'accounts/student_home.html')
+    
+def create(request):
+    if request.method=='POST':
+        quiz = Quiz()
+        quiz.topic = request.POST.get('topic')
+        quiz.max_score = request.POST.get('max_score')
+        quiz.creator = request.user
+        quiz.save()
+        return redirect('/accounts/teacher_home')
+    return render(request, 'accounts/create_quiz.html', context={'form':create_quiz})

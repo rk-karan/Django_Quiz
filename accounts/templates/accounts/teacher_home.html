@@ -1,4 +1,10 @@
-{%extends 'base.html'%}
-{%block content%}
-Teacher registration was successful
+{% extends 'base.html' %}
+{% block content %}
+{% for quiz in set %}
+	{% if quiz.creator == user %}
+	<h1>{{quiz.topic}}</h1>
+	<br>
+	{% endif %}
+{% endfor %}
+	<a href="{%url 'create_quiz'%}" class="btn btn-secondary my-2">Create A Quiz</a>
 {%endblock%}
