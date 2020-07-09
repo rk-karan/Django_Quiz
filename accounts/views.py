@@ -30,7 +30,7 @@ class signup_as_teacher(CreateView):  #CreateView creates an instance of the dat
         user = form.save()  #saving the information in the form in the database
         login(self.request, user)  #once registration is successful, the teacher is logged in
         return redirect('/accounts/teacher_home')  #redirecting to student home
-        
+
 def signin(request):
     if request.method=='POST':
         form = AuthenticationForm(data=request.POST)
