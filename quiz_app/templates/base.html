@@ -67,9 +67,19 @@
   <div class="navbar navbar-dark bg-dark shadow-sm">
     <div class="container d-flex justify-content-between">
 	  <div class="col-6">
+      {% if user.is_teacher %}
+      <a href="{%url 'teacher_home'%}" class="navbar-brand d-flex align-items-center">
+        <strong>Welcome</strong>
+      </a>
+      {% elif user.is_student %}
+      <a href="{%url 'student_home'%}" class="navbar-brand d-flex align-items-center">
+        <strong>Welcome</strong>
+      </a>
+      {% else %}
       <a href="{%url 'home'%}" class="navbar-brand d-flex align-items-center">
         <strong>Welcome</strong>
       </a>
+      {% endif %}
 	  </div>
 	  <div class="col-4"></div>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
