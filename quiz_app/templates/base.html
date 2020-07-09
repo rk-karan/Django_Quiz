@@ -55,6 +55,7 @@
             <ul class="list-unstyled">
               <li><a href="tel:+918238441396" class="text-white">Call</a></li>
               <li><a href="mailto:rohit18@iitg.ac.in;bhatt@iitg.ac.in" class="text-white">Email</a></li>
+              <br/>
 			  {% if user.is_authenticated %}
               <li><a href="{%url 'signout'%}" class="text-white">Sign Out</li>
 			  {%endif%}
