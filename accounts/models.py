@@ -17,3 +17,8 @@ class Quiz(models.Model):
     quiz_name=models.CharField(max_length=150)
     max_marks = models.IntegerField()
     number_of_questions = models.IntegerField()
+
+class add_questions(models.Model):
+    quiz=models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
+    question=models.TextField()
+    marks=models.IntegerField()

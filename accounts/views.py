@@ -1,10 +1,10 @@
 from django.contrib.auth import login, logout,authenticate
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.views.generic import CreateView
 from .form import studentSignUpForm, teacherSignUpForm, create_quiz
 from django.contrib.auth.forms import AuthenticationForm
-from .models import User, Quiz
+from .models import User, Quiz, add_questions
 
 from .decorators import student_required, teacher_required
 
