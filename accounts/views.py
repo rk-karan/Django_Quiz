@@ -32,8 +32,8 @@ class signup_as_teacher(CreateView):  #CreateView creates an instance of the dat
         return redirect('/accounts/teacher_home')  #redirecting to student home
 
 def quiz_view(request, pk):
-    quiz = get_object_or_404(Quiz, pk = pk, creator = request.user)
-    #added set and set as contexts to search through the libraries
+    quiz = get_object_or_404(Quiz, pk = pk)             #removed creator check from here. will do that directly in quiz_view.html
+    #added set and set1 as contexts to search through the libraries
     return render(request, 'accounts/quiz_view.html', context={'quiz':quiz, 'set':questions.objects.all(), 'set1':answers.objects.all()})
 
 
