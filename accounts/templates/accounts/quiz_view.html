@@ -1,10 +1,24 @@
 {% extends 'base.html' %}
 {% block content %}
-	<h3>{{quiz.quiz_name}} - {{quiz.topic}}</h3>
-	{% for q in set %}
-	{% if q.quiz == quiz %}
-	<p>{{q.question}}</p>
-	{% endif %}
-	{% endfor %}
-	<a href="/accounts/add_questions/{{quiz.pk}}" class="btn btn-secondary my-2">Add Questions</a>
+<h3>{{quiz.quiz_name}}</h3>
+<h5>Topic: {{quiz.topic}}</h5>
+<h5>
+	<div class="d-flex justify-content-between">
+		<div>
+			Number of questions: {{quiz.number_of_questions}}
+		</div>
+		<div>
+			Maximum Marks: {{quiz.max_marks}}
+		</div>
+	</div>
+</h5>
+<br/>
+{% for q in set %}
+{% if q.quiz == quiz %}
+<div class="alert alert-success" role="alert">
+	<h5><p class="text-left">{{q.question}}</p></h5>
+</div>
+{% endif %}
+{% endfor %}
+<a href="/accounts/add_questions/{{quiz.pk}}" class="btn btn-primary">Add Questions</a>
 {% endblock %}
