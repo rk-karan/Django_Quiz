@@ -7,15 +7,17 @@
 	<div class="album py-5 bg-light">
 		<div class="container">
 			<div class="col-md-4">
-				<div class="card mb-4 shadow-sm" style="width: 18rem;">
-					<div class="card-body">
-						<h4 class="card-title">{{quiz.quiz_name}}</h4>
-						<div class="d-flex justify-content-between align-items-center">
-							<p class="text-left">Topic: {{quiz.topic}}</p>
-							<p class="text-right">Maximum Marks: {{quiz.max_marks}}</p>
+				<a href="/accounts/quiz_view/{{quiz.pk}}">
+					<div class="card mb-4 shadow-sm" style="width: 18rem;">
+						<div class="card-body">
+							<h4 class="card-title">{{quiz.quiz_name}}</h4>
+							<div class="d-flex justify-content-between align-items-center">
+								<p class="text-left">Topic: {{quiz.topic}}</p>
+								<p class="text-right">Maximum Marks: {{quiz.max_marks}}</p>
+							</div>
 						</div>
 					</div>
-				</div>
+				</a>
 			</div>
 		</div>
 	</div>
