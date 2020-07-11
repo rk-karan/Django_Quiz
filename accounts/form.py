@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django.db import transaction
-from .models import User,student,teacher, Quiz, questions
+from .models import User,student,teacher, Quiz, questions, answers
 
 class studentSignUpForm(UserCreationForm):
     #can be added
@@ -56,3 +56,8 @@ class add_question_form(forms.ModelForm):
     class Meta:
         model=questions
         fields=('question', 'marks')
+
+class add_answers_form(forms.ModelForm):
+    class Meta:
+        model=answers
+        fields=('text', 'is_correct')

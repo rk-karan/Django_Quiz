@@ -18,14 +18,27 @@
 <div class="alert alert-success" role="alert">
 	<div class="d-flex justify-content-between">
 		<div>
-				<h5><p>{{q.question}}</p></h5>
+			<h5><p>Q. {{q.question}}</p></h5>
 		</div>
 		<div>
-				<h5><p> Marks: {{q.marks}}</p></h5>
+			<h5><p> Marks: {{q.marks}}</p></h5>
 		</div>
 	</div>
+	{% for a in set1 %}
+	{% if a.question == q%}
+	<h5><p class="text-left">{{a.text}}</p></h5>
+	{%endif%}
+	{%endfor%}
+	<a href="/accounts/add_answers/{{quiz.id}}/{{q.id}}" class="btn btn-primary">Add Answers</a>
 </div>
 {% endif %}
 {% endfor %}
-<a href="/accounts/add_questions/{{quiz.pk}}" class="btn btn-primary">Add Questions</a>
+<div class="d-flex justify-content-between">
+	<div>
+		<a href="/accounts/teacher_home" class="btn btn-primary">Back</a>
+	</div>
+	<div>
+		<a href="/accounts/add_questions/{{quiz.pk}}" class="btn btn-primary">Add Questions</a>
+	</div>
+</div>
 {% endblock %}

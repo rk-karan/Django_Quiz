@@ -1,0 +1,17 @@
+{%extends 'base.html'%}
+{% block content %}
+<h4> Add Answers to Quiz-{{quiz.quiz_name}} on the Topic-{{quiz.topic}} </h4>
+<form action="{% url 'add_answers' quiz.pk question.pk %}" method="POST" novalidate>
+  {% csrf_token %}
+  <div class=“container”>
+    <div class="alert alert-info" role="alert">
+    <h5>You are adding answer to the question:</h5>
+    <br/>
+    <h5> {{question.question}}</h5>
+    {{form}}
+    <br/>
+    <input type="submit" value="Submit" class="btn btn-primary my-2">
+  </div>
+  </div>
+</form>
+{% endblock %}
