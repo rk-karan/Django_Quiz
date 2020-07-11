@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+	<h3>{{quiz.quiz_name}} - {{quiz.topic}}</h3>
+	{% for q in set %}
+	{% if q.quiz == quiz %}
+	<p>{{q.question}}</p>
+	{% endif %}
+	{% endfor %}
+	<a href="/accounts/add_questions/{{quiz.pk}}" class="btn btn-secondary my-2">Add Questions</a>
+{% endblock %}

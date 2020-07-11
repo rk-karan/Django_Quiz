@@ -2,11 +2,11 @@ from django.contrib.auth import login, logout,authenticate
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.views.generic import CreateView
-from .form import studentSignUpForm, teacherSignUpForm, create_quiz
+from .form import studentSignUpForm, teacherSignUpForm, create_quiz, add_question_form
 from django.contrib.auth.forms import AuthenticationForm
-from .models import User, Quiz, add_questions
+from .models import User, Quiz, questions
 
-from .decorators import student_required, teacher_required
+from .decorators import student_required, teacher_required, student_login, teacher_login
 
 def home(request):
     return render(request, 'accounts/home.html')
@@ -30,6 +30,11 @@ class signup_as_teacher(CreateView):  #CreateView creates an instance of the dat
         user = form.save()  #saving the information in the form in the database
         login(self.request, user)  #once registration is successful, the teacher is logged in
         return redirect('/accounts/teacher_home')  #redirecting to student home
+
+def quiz_view(request, pk):
+    quiz = get_object_or_404(Quiz, pk = pk, creator = request.user)
+    return render(request, 'accounts/quiz_view.html', context={'quiz':quiz, 'set':questions.objects.all()})
+    
         
 def signin(request):
     if request.method=='POST':
@@ -47,7 +52,7 @@ def signin(request):
                     else:
                         return redirect('/accounts/teacher_home') #to teacher dashboard
                 else:
-                    messages.error(request,"User has been temporarily deactivated") #ivalid message display
+                    messages.error(request,"User has been temporarily deactivated") #invalid message display
             else:
                 messages.error(request,"Invalid username or password") #invalid message display
         else:
@@ -58,15 +63,15 @@ def signout(request):
     logout(request)
     return render(request, 'accounts/home.html')
 
-@teacher_required
+@teacher_login
 def teacher_home(request):
     return render(request, 'accounts/teacher_home.html', context = {'set':Quiz.objects.all()})
 
-@student_required
+@student_login
 def student_home(request):
     return render(request, 'accounts/student_home.html', context = {'set':Quiz.objects.all()})
     
-@teacher_required
+@teacher_login
 def create(request):
     if request.method=='POST':
         quiz = Quiz()
@@ -76,5 +81,19 @@ def create(request):
         quiz.max_marks = request.POST.get('max_marks')
         quiz.creator = request.user
         quiz.save()
-        return redirect('/accounts/teacher_home')
+        return redirect('/accounts/quiz_view/'+str(quiz.pk))
     return render(request, 'accounts/create_quiz.html', context={'form':create_quiz})
+
+@teacher_required
+def add_questions(request, pk):
+    print("========", pk)
+    quiz = get_object_or_404(Quiz, pk = pk, creator = request.user)
+    
+    if request.method=='POST':
+        question = questions()
+        question.question = request.POST.get('question')
+        question.marks = request.POST.get('marks')
+        question.quiz = quiz
+        question.save()
+        return redirect('/accounts/quiz_view/'+str(quiz.pk))
+    return render(request, 'accounts/add_question.html', context={'form':add_question_form, 'quiz':quiz})
