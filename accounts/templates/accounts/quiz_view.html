@@ -29,16 +29,17 @@
 	<h5><p class="text-left">{{a.text}}</p></h5>
 	{%endif%}
 	{%endfor%}
-	<a href="/accounts/add_answers/{{quiz.id}}/{{q.id}}" class="btn btn-primary">Add Answers</a>
+	{% if quiz.creator == user %}<a href="/accounts/add_answers/{{quiz.id}}/{{q.id}}" class="btn btn-primary">Add Answers</a> {% endif %}
 </div>
 {% endif %}
 {% endfor %}
 <div class="d-flex justify-content-between">
 	<div>
-		<a href="/accounts/teacher_home" class="btn btn-primary">Back</a>
+		{% if user.is_teacher %}<a href="/accounts/teacher_home" class="btn btn-primary">Back</a>{% endif %}
+		{% if user.is_student %}<a href="/accounts/student_home" class="btn btn-primary">Back</a>{% endif %}
 	</div>
 	<div>
-		<a href="/accounts/add_questions/{{quiz.pk}}" class="btn btn-primary">Add Questions</a>
+		{% if quiz.creator == user %}<a href="/accounts/add_questions/{{quiz.pk}}" class="btn btn-primary">Add Questions</a> {% endif %}
 	</div>
 </div>
 {% endblock %}
