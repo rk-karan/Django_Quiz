@@ -1,10 +1,44 @@
 {% extends 'base.html' %}
 {% block content %}
-	<h3>{{quiz.quiz_name}} - {{quiz.topic}}</h3>
-	{% for q in set %}
-	{% if q.quiz == quiz %}
-	<p>{{q.question}}</p>
-	{% endif %}
-	{% endfor %}
-	<a href="/accounts/add_questions/{{quiz.pk}}" class="btn btn-secondary my-2">Add Questions</a>
+<h3>{{quiz.quiz_name}}</h3>
+<h5>Topic: {{quiz.topic}}</h5>
+<h5>
+	<div class="d-flex justify-content-between">
+		<div>
+			Number of questions: {{quiz.number_of_questions}}
+		</div>
+		<div>
+			Maximum Marks: {{quiz.max_marks}}
+		</div>
+	</div>
+</h5>
+<br/>
+{% for q in set %}
+{% if q.quiz == quiz %}
+<div class="alert alert-success" role="alert">
+	<div class="d-flex justify-content-between">
+		<div>
+			<h5><p>Q. {{q.question}}</p></h5>
+		</div>
+		<div>
+			<h5><p> Marks: {{q.marks}}</p></h5>
+		</div>
+	</div>
+	{% for a in set1 %}
+	{% if a.question == q%}
+	<h5><p class="text-left">{{a.text}}</p></h5>
+	{%endif%}
+	{%endfor%}
+	<a href="/accounts/add_answers/{{quiz.id}}/{{q.id}}" class="btn btn-primary">Add Answers</a>
+</div>
+{% endif %}
+{% endfor %}
+<div class="d-flex justify-content-between">
+	<div>
+		<a href="/accounts/teacher_home" class="btn btn-primary">Back</a>
+	</div>
+	<div>
+		<a href="/accounts/add_questions/{{quiz.pk}}" class="btn btn-primary">Add Questions</a>
+	</div>
+</div>
 {% endblock %}

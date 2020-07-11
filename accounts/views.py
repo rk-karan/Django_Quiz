@@ -2,11 +2,11 @@ from django.contrib.auth import login, logout,authenticate
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.views.generic import CreateView
-from .form import studentSignUpForm, teacherSignUpForm, create_quiz, add_question_form
+from .form import studentSignUpForm, teacherSignUpForm, create_quiz, add_question_form, add_answers_form
 from django.contrib.auth.forms import AuthenticationForm
-from .models import User, Quiz, questions
+from .models import User, Quiz, questions, answers
 
-from .decorators import student_required, teacher_required, student_login, teacher_login
+from .decorators import student_required, teacher_required, student_login, teacher_login, teacher_quiz_required
 
 def home(request):
     return render(request, 'accounts/home.html')
@@ -33,9 +33,10 @@ class signup_as_teacher(CreateView):  #CreateView creates an instance of the dat
 
 def quiz_view(request, pk):
     quiz = get_object_or_404(Quiz, pk = pk, creator = request.user)
-    return render(request, 'accounts/quiz_view.html', context={'quiz':quiz, 'set':questions.objects.all()})
-    
-        
+    #added set and set as contexts to search through the libraries
+    return render(request, 'accounts/quiz_view.html', context={'quiz':quiz, 'set':questions.objects.all(), 'set1':answers.objects.all()})
+
+
 def signin(request):
     if request.method=='POST':
         form = AuthenticationForm(data=request.POST)
@@ -70,7 +71,7 @@ def teacher_home(request):
 @student_login
 def student_home(request):
     return render(request, 'accounts/student_home.html', context = {'set':Quiz.objects.all()})
-    
+
 @teacher_login
 def create(request):
     if request.method=='POST':
@@ -88,7 +89,7 @@ def create(request):
 def add_questions(request, pk):
     print("========", pk)
     quiz = get_object_or_404(Quiz, pk = pk, creator = request.user)
-    
+
     if request.method=='POST':
         question = questions()
         question.question = request.POST.get('question')
@@ -97,3 +98,23 @@ def add_questions(request, pk):
         question.save()
         return redirect('/accounts/quiz_view/'+str(quiz.pk))
     return render(request, 'accounts/add_question.html', context={'form':add_question_form, 'quiz':quiz})
+
+@teacher_quiz_required  #go to decorators.py for more info
+def add_answers(request, quiz_pk, question_pk):
+    print("========", quiz_pk, question_pk)
+    quiz = get_object_or_404(Quiz, pk=quiz_pk, creator=request.user) #retrieving the quiz object
+    question = get_object_or_404(questions, pk=question_pk, quiz=quiz) #retireving the question object
+
+    if request.method=='POST':
+        answer=answers()
+        answer.text=request.POST.get('text')
+        #the output given when {{form}} is saved is 'on'. But we have to save 'True/False' for boolean field
+        if request.POST.get('is_correct')=='on':
+            answer.is_correct=True
+        else:
+            answer.is_correct=False
+
+        answer.question=question
+        answer.save()
+        return redirect('/accounts/quiz_view/'+str(quiz.pk))
+    return render(request, 'accounts/add_answer.html', context={'form':add_answers_form, 'quiz':quiz, 'question':question})
