@@ -14,11 +14,10 @@
 </h5>
 <br/>
 {% for q in set %}
-{% if q.quiz == quiz %}
 <div class="alert alert-success" role="alert">
 	<div class="d-flex justify-content-between">
 		<div>
-			<h5><p>Q. {{q.question}}</p></h5>
+			<h5><p>Q.{{forloop.counter}} {{q.question}}</p></h5>
 		</div>
 		<div>
 			<h5><p> Marks: {{q.marks}}</p></h5>
@@ -31,7 +30,6 @@
 	{%endfor%}
 	{% if quiz.creator == user %}<a href="/accounts/add_answers/{{quiz.id}}/{{q.id}}" class="btn btn-primary">Add Answers</a> {% endif %}
 </div>
-{% endif %}
 {% endfor %}
 <div class="d-flex justify-content-between">
 	<div>
