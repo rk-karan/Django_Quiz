@@ -27,3 +27,8 @@ class answers(models.Model):
     question=models.ForeignKey(questions, on_delete=models.CASCADE, related_name='answers')
     text=models.CharField(max_length=255)
     is_correct=models.BooleanField('Correct answer', default=False)
+    
+class question_info(models.Model):
+    question=models.ForeignKey(questions, on_delete=models.CASCADE, related_name='info')
+    student=models.ForeignKey(User, on_delete=models.CASCADE, related_name='info')
+    is_correct=models.BooleanField('Correct answer', default=False)
