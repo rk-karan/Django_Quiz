@@ -2,25 +2,71 @@
 {% block content %}
 <h3>Welcome {{user.username}}. Attempt a Quiz.</h3>
 <br></br>
-<div class="card-deck">
-	{% for quiz in set %}
-	<div class="album py-5 bg-light">
-		<div class="container">
-			<div class="col-md-4">
-					<div class="card mb-4 shadow-sm" style="width: 18rem;">
-						<div class="card-body">
-							<a href="/accounts/student_quiz_view/{{quiz.pk}}">
-							<h4 class="card-title">{{quiz.quiz_name}}</h4>
-							</a>
-							<div class="d-flex justify-content-between align-items-center">
-								<p class="text-left">Topic: {{quiz.topic}}</p>
-								<p class="text-right">Maximum Marks: {{quiz.max_marks}}</p>
+<div class="p-3 mb-2 bg-light text-dark">
+<div class="container">
+	<h3>Available Quizzes</h3>
+	<div class="row row-cols-1 row-cols-md-3">
+		{%for quiz in set2%}
+		<div class="album py-5 bg-light">
+		<div class="col mb-4" style="max-width: 24rem;">
+			<div class="card">
+				<div class="card-body">
+					<h5 class="card-title">{{quiz.quiz_name}}</h5>
+					<div class="card-text">
+						<div class="d-flex justify-content-between">
+							<div>
+								<p class="font-weight-bold">Questions: {{quiz.number_of_questions}}</p>
+							</div>
+							<div>
+								<p class="font-weight-bold">Total Marks: {{quiz.max_marks}}</p>
 							</div>
 						</div>
+						<div class="btn-group">
+							<a href="/accounts/student_quiz_view/{{quiz.pk}}">
+								<button type="button" class="btn btn-sm btn-outline-secondary">Start Test</button>
+							</a>
+							<button type="button" class="btn btn-sm btn-outline-secondary">Leader Board</button>
+						</div>
 					</div>
+				</div>
 			</div>
 		</div>
+		</div>
+		{%endfor%}
 	</div>
-	{% endfor %}
+</div>
+<br></br>
+<div class="container">
+	<h3>Attempted Quizzes</h3>
+	<div class="row row-cols-1 row-cols-md-3">
+		{%for quiz in set1%}
+		<div class="album py-5 bg-light">
+		<div class="col mb-4" style="max-width: 24rem;">
+			<div class="card">
+				<div class="card-body">
+					<h5 class="card-title">{{quiz.quiz.quiz_name}}</h5>
+					<div class="card-text">
+						<div class="d-flex justify-content-between">
+							<div>
+								<p class="font-weight-bold">Your Marks: {{quiz.marks}}</p>
+							</div>
+							<div>
+								<p class="font-weight-bold">Total Marks: {{quiz.quiz.max_marks}}</p>
+							</div>
+						</div>
+						<div class="btn-group">
+							<a href="">
+								<button type="button" class="btn btn-sm btn-outline-secondary">View Quiz</button>
+							</a>
+							<button type="button" class="btn btn-sm btn-outline-secondary">Leader Board</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
+		{%endfor%}
+	</div>
+</div>
 </div>
 {%endblock%}

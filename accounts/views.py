@@ -72,7 +72,11 @@ def teacher_home(request):
 
 @student_login
 def student_home(request):
-    return render(request, 'accounts/student_home.html', context = {'set':Quiz.objects.all()})
+    set1=quiz_info.objects.all().filter(student=request.user)
+    set2=Quiz.objects.all()
+    for i in set1:
+        set2=set2.exclude(pk=i.quiz.id)
+    return render(request, 'accounts/student_home.html', context = {'set1':set1,'set2':set2})
 
 @teacher_login
 def create(request):
@@ -165,7 +169,7 @@ def calculate(request, quiz_pk, question_pk, num):      #New model created quest
             info.is_correct = True
             score=score+question.marks #if answer is correct, then update score
             fetch_score.marks=score #updating the attribute
-            fetch_score.save() 
+            fetch_score.save()
         info.save()
     return render(request, 'accounts/question_form.html', context={'quiz':quiz, 'set':questions.objects.all().filter(quiz=quiz), 'count':num, 'set1':answers.objects.all()})
 
