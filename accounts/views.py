@@ -35,7 +35,8 @@ class signup_as_teacher(CreateView):  #CreateView creates an instance of the dat
 def quiz_view(request, pk):
     quiz = get_object_or_404(Quiz, pk = pk)             #removed creator check from here. will do that directly in quiz_view.html
     #added set and set1 as contexts to search through the libraries
-    return render(request, 'accounts/quiz_view.html', context={'quiz':quiz, 'set':questions.objects.all().filter(quiz=quiz), 'set1':answers.objects.all()}) #filtering objects so forloop.counter can be used in quiz_view.html
+    count=questions.objects.all().filter(quiz=quiz).count()
+    return render(request, 'accounts/quiz_view.html', context={'quiz':quiz, 'set':questions.objects.all().filter(quiz=quiz), 'set1':answers.objects.all(), 'count':count}) #filtering objects so forloop.counter can be used in quiz_view.html
 
 
 def signin(request):
@@ -58,7 +59,7 @@ def signin(request):
             else:
                 messages.error(request,"Invalid username or password") #invalid message display
         else:
-                messages.error(request,"Invalid username or password") #invalid message display
+            messages.error(request,"Invalid username or password") #invalid message display
     return render(request, 'accounts/signin.html', context={'form':AuthenticationForm()})
 
 def signout(request):
@@ -91,13 +92,18 @@ def add_questions(request, pk):
     quiz = get_object_or_404(Quiz, pk = pk, creator = request.user)
 
     if request.method=='POST':
-        question = questions()
-        question.question = request.POST.get('question')
-        question.marks = request.POST.get('marks')
-        question.quiz = quiz
-        question.save()
-        return redirect('/accounts/quiz_view/'+str(quiz.pk))
-    return render(request, 'accounts/add_question.html', context={'form':add_question_form, 'quiz':quiz})
+        form = add_question_form(data=request.POST)
+        if form.is_valid():
+            question = questions()
+            question.question = request.POST.get('question')
+            question.marks = request.POST.get('marks')
+            question.quiz = quiz
+            question.save()
+            return redirect('/accounts/quiz_view/'+str(quiz.pk))
+        else:
+            messages.error(request,"Either text or marks missing")
+
+    return render(request, 'accounts/add_question.html', context={'form':add_question_form(), 'quiz':quiz})
 
 @teacher_quiz_required  #go to decorators.py for more info
 def add_answers(request, quiz_pk, question_pk):
@@ -118,15 +124,15 @@ def add_answers(request, quiz_pk, question_pk):
         answer.save()
         return redirect('/accounts/quiz_view/'+str(quiz.pk))
     return render(request, 'accounts/add_answer.html', context={'form':add_answers_form, 'quiz':quiz, 'question':question})
-    
+
 def student_quiz_view(request, quiz_pk):
     quiz = get_object_or_404(Quiz, pk=quiz_pk)                      #This function simply provides the quiz info. No special functions or methods used.
     return render(request, 'accounts/about_quiz.html', context={'quiz':quiz})
-    
+
 def question_view(request, quiz_pk, num):                #This uses a custom made form made in html (Not in form.py). Form field returns whatever is specified in the 'value' attribute on submitting
     quiz = get_object_or_404(Quiz, pk=quiz_pk)                      #'count' variable decides where the forloop.counter will stop and hence displays a new question everytime with increment in count
     return render(request, 'accounts/question_form.html', context={'quiz':quiz, 'set':questions.objects.all().filter(quiz=quiz), 'count':num, 'set1':answers.objects.all()})
-    
+
 def calculate(request, quiz_pk, question_pk, num):      #New model created question_info. Stores whether a particular user got a question right or wrong
     quiz = get_object_or_404(Quiz, pk=quiz_pk)          #If an object with specified user and specified question already exists a new object wont be created. So, you can not update your score
     boo = request.POST.get('optradio')                  #by reattempting the quiz.

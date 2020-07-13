@@ -37,7 +37,13 @@
 		{% if user.is_student %}<a href="/accounts/student_home" class="btn btn-primary">Back</a>{% endif %}
 	</div>
 	<div>
-		{% if quiz.creator == user %}<a href="/accounts/add_questions/{{quiz.pk}}" class="btn btn-primary">Add Questions</a> {% endif %}
+		{% if quiz.creator == user %}
+		{% if count < quiz.number_of_questions%}
+		<a href="/accounts/add_questions/{{quiz.pk}}" class="btn btn-primary">Add Questions</a>
+		{% else %}
+		<div class="alert alert-danger" role="alert"> Required Number of questions are already added</div>
+		{% endif %}
+		{% endif %}
 	</div>
 </div>
 {% endblock %}
