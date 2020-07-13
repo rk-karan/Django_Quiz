@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+{% for q in set %}
+{% if forloop.counter == count %}
+	<p>{{q.question}}</p>
+	<form method="POST" action="{% url 'calculate' quiz.pk q.pk count|add:1 %}">
+	{% csrf_token %}
+	{% for a in set1 %}
+	{% if a.question == q %}
+		<div class="radio">
+			{% if a.is_correct %}<label><input type="radio" name="optradio" value="true">{{a.text}}</label>
+			{% else %}<label><input type="radio" name="optradio" value="false">{{a.text}}</label>{% endif %}
+		</div>
+	{% endif %}
+	{% endfor %}
+		<br>
+		<div class="row">
+			<div class="col-8">
+			</div>
+			<div class="col-4">
+				{% if count == quiz.number_of_questions %}<button type="submit" class="btn btn-danger">Get Your Final Score</button>
+				{% else %}<button type="submit" class="btn btn-danger">Submit</button>{% endif %}
+			</div>
+		</div>
+	</form>
+{% endif %}
+{% endfor %}
+{% endblock %}
