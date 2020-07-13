@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+	<div class="card-body">
+		<h5 class="card-title">{{quiz.quiz_name}}</h5>
+		<h6 class="card-subtitle mb-2 text-muted">{{quiz.topic}}</h6>
+		<div class="row">
+			<div class="col-2">
+				<p>Maximum Marks : {{quiz.max_marks}}</p>
+			</div>
+			<div class="col-8">
+				<br><br>
+				<h3>Rules</h3>
+				<li>You can attempt each question only once.</li>
+				<li>Your answer will not be considered if you do not click 'SUBMIT' for each question.</li>
+				<li>It is compulsary to attempt each question.</li>
+				<li>There is no negative marking. Marks corresponding to each question have been mentioned alongside.</li>
+			</div>
+			<div class="col-2">
+				<p>{{quiz.number_of_questions}} Questions</p>
+			</div>
+		</div>
+		<br><br>
+		<div class="row">
+			<div class="col-6">
+				<a href="{% url 'student_home' %}" class="btn btn-primary">Back To Homepage</a>
+			</div>
+
+			<div class="col-6">
+				<a href="{% url 'question_view' quiz.pk 1%}" class="btn btn-danger">Start Quiz</a>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
