@@ -1,34 +1,33 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="card">
-	<div class="card-body">
-		<h5 class="card-title">{{quiz.quiz_name}}</h5>
-		<h6 class="card-subtitle mb-2 text-muted">{{quiz.topic}}</h6>
-		<div class="row">
-			<div class="col-2">
-				<p>Maximum Marks : {{quiz.max_marks}}</p>
-			</div>
-			<div class="col-8">
-				<br><br>
-				<h3>Rules</h3>
-				<li>You can attempt each question only once.</li>
-				<li>Your answer will not be considered if you do not click 'SUBMIT' for each question.</li>
-				<li>It is compulsary to attempt each question.</li>
-				<li>There is no negative marking. Marks corresponding to each question have been mentioned alongside.</li>
-			</div>
-			<div class="col-2">
-				<p>{{quiz.number_of_questions}} Questions</p>
-			</div>
+<div class="alert alert-info" role="alert">
+	<h3 class="text-center"><p class="font-weight-bold">{{quiz.quiz_name}}</p></h3>
+	<h5 class="text-center">Topic: {{quiz.topic}}</h5>
+	<div class="d-flex justify-content-between">
+		<div>
+			<p class="font-weight-bold">Total Questions: {{quiz.number_of_questions}}</p>
 		</div>
-		<br><br>
-		<div class="row">
-			<div class="col-6">
-				<a href="{% url 'student_home' %}" class="btn btn-primary">Back To Homepage</a>
-			</div>
+		<div>
+			<p class="font-weight-bold">Total Marks: {{quiz.max_marks}}</p>
+		</div>
+	</div>
+	<h4 class="text-center"><p class="font-weight-bold">Rules</p></h4>
+	<div class="alert alert-warning" role="alert">
+		<li class="text-left">You can attempt this quiz only once.</li>
+		<li class="text-left">You can attempt each question only once.</li>
+		<li class="text-left">Each question has only one option correct.</li>
+		<li class="text-left">You will have to click "Submit" after each question. Your answer will not be considered if you do not click 'SUBMIT' for each question.</li>
+		<li class="text-left">It is compulsary to attempt each question.</li>
+		<li class="text-left">There is no negative marking. Marks corresponding to each question have been mentioned alongside.</li>
+	</div>
 
-			<div class="col-6">
-				<a href="{% url 'question_view' quiz.pk 1%}" class="btn btn-danger">Start Quiz</a>
-			</div>
+	<div class="row">
+		<div class="col-6">
+			<a href="{% url 'student_home' %}" class="btn btn-primary">Back To Homepage</a>
+		</div>
+
+		<div class="col-6">
+			<a href="{% url 'question_view' quiz.pk 1%}" class="btn btn-danger">Start Quiz</a>
 		</div>
 	</div>
 </div>

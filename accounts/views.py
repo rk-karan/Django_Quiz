@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.views.generic import CreateView
 from .form import studentSignUpForm, teacherSignUpForm, create_quiz, add_question_form, add_answers_form
 from django.contrib.auth.forms import AuthenticationForm
-from .models import User, Quiz, questions, answers, question_info
+from .models import User, Quiz, questions, answers, question_info, quiz_info
 
 from .decorators import student_required, teacher_required, student_login, teacher_login, teacher_quiz_required
 
@@ -131,14 +131,30 @@ def student_quiz_view(request, quiz_pk):
 
 def question_view(request, quiz_pk, num):                #This uses a custom made form made in html (Not in form.py). Form field returns whatever is specified in the 'value' attribute on submitting
     quiz = get_object_or_404(Quiz, pk=quiz_pk)                      #'count' variable decides where the forloop.counter will stop and hence displays a new question everytime with increment in count
+
+    if quiz_info.objects.all().filter(student=request.user, quiz=quiz).exists():
+        pass #if certain instance already exists then pass
+    else:
+        student_quiz_info=quiz_info() #creating a quiz_info instance
+        student_quiz_info.student=request.user
+        student_quiz_info.quiz=quiz
+        student_quiz_info.marks=0
+        student_quiz_info.save() #saving the instance
+
     return render(request, 'accounts/question_form.html', context={'quiz':quiz, 'set':questions.objects.all().filter(quiz=quiz), 'count':num, 'set1':answers.objects.all()})
 
 def calculate(request, quiz_pk, question_pk, num):      #New model created question_info. Stores whether a particular user got a question right or wrong
-    quiz = get_object_or_404(Quiz, pk=quiz_pk)          #If an object with specified user and specified question already exists a new object wont be created. So, you can not update your score
-    boo = request.POST.get('optradio')                  #by reattempting the quiz.
-    print('=========', boo)                             #Files to check: question_form.html, about_quiz.html. Important: how variables are being passed.
-    question=get_object_or_404(questions, pk=question_pk)
+    quiz = get_object_or_404(Quiz, pk=quiz_pk)          #If an object with specified user and specified question already exists a new object wont be created. So, you can not update your score by reattempting the quiz.
+    boo = request.POST.get('optradio')
+    print('=========', boo)
+
+    question=get_object_or_404(questions, pk=question_pk) #getting the question object
+
+    fetch_score=get_object_or_404(quiz_info, quiz=quiz, student=request.user)
+    score=fetch_score.marks
+
     info = question_info.objects.all().filter(question=question, student=request.user)
+
     if info.exists():
         pass
     else:
@@ -147,5 +163,13 @@ def calculate(request, quiz_pk, question_pk, num):      #New model created quest
         info.student = request.user
         if boo == 'true':
             info.is_correct = True
+            score=score+question.marks #if answer is correct, then update score
+            fetch_score.marks=score #updating the attribute
+            fetch_score.save() 
         info.save()
     return render(request, 'accounts/question_form.html', context={'quiz':quiz, 'set':questions.objects.all().filter(quiz=quiz), 'count':num, 'set1':answers.objects.all()})
+
+def final_score(request, quiz_pk):
+    quiz = get_object_or_404(Quiz, pk=quiz_pk)
+    final_score=get_object_or_404(quiz_info, quiz=quiz, student=request.user).marks
+    return render(request, 'accounts/final_score.html', context={'quiz':quiz, 'final_score':final_score})

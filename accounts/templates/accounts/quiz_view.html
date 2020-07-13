@@ -25,7 +25,11 @@
 	</div>
 	{% for a in set1 %}
 	{% if a.question == q%}
+	{% if a.is_correct %}
+	<h5 class="font-weight-bold"><p class="text-left">{{a.text}}</p></h5>
+	{%else%}
 	<h5><p class="text-left">{{a.text}}</p></h5>
+	{%endif%}
 	{%endif%}
 	{%endfor%}
 	{% if quiz.creator == user %}<a href="/accounts/add_answers/{{quiz.id}}/{{q.id}}" class="btn btn-primary">Add Answers</a> {% endif %}
