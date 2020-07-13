@@ -31,4 +31,13 @@ urlpatterns = [
 
 #for adding answers
     path('add_answers/<int:quiz_pk>/<int:question_pk>', views.add_answers, name='add_answers'),
+    
+#for students viewing quizzes
+    path('student_quiz_view/<int:quiz_pk>', views.student_quiz_view, name='student_quiz_view'),
+    
+#for students attempting quiz
+    path('question_view/<int:quiz_pk>/<int:num>', views.question_view, name='question_view'),
+    
+#for caculating score after answer submitted
+    path('calculate/<int:quiz_pk>/<int:question_pk>/<int:num>', views.calculate, name='calculate'),
 ]
