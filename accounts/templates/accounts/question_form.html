@@ -2,27 +2,39 @@
 {% block content %}
 {% for q in set %}
 {% if forloop.counter == count %}
-	<p>{{q.question}}</p>
-	<form method="POST" action="{% url 'calculate' quiz.pk q.pk count|add:1 %}">
-	{% csrf_token %}
-	{% for a in set1 %}
-	{% if a.question == q %}
-		<div class="radio">
-			{% if a.is_correct %}<label><input type="radio" name="optradio" value="true">{{a.text}}</label>
-			{% else %}<label><input type="radio" name="optradio" value="false">{{a.text}}</label>{% endif %}
+<div class="alert alert-info" role="alert">
+	<div class="d-flex justify-content-between">
+		<div>
+			<p class="font-weight-bold">Question number: {{count}} ({{count}} of {{quiz.number_of_questions}})</p>
 		</div>
-	{% endif %}
-	{% endfor %}
+		<div>
+			<p class="font-weight-bold">Marks: {{q.marks}}</p>
+		</div>
+	</div>
+	<div class="alert alert-warning" role="alert">
+	<h5><p class="text-left">{{q.question}}</p></h5></div>
+	<form method="POST" action="{% url 'calculate' quiz.pk q.pk count|add:1 %}">
+		{% csrf_token %}
+		{% for a in set1 %}
+		{% if a.question == q %}
+		<div class="radio">
+		{% if a.is_correct %}<label><input type="radio" name="optradio" value="true">{{a.text}}</label>
+		{% else %}<label><input type="radio" name="optradio" value="false">{{a.text}}</label>{% endif %}
+	</div>
+		{% endif %}
+		{% endfor %}
 		<br>
 		<div class="row">
 			<div class="col-8">
 			</div>
 			<div class="col-4">
-				{% if count == quiz.number_of_questions %}<button type="submit" class="btn btn-danger">Get Your Final Score</button>
+				{% if count == quiz.number_of_questions %}
+				<a href="{% url 'final_score' quiz.pk %}" class="btn btn-danger">Get You Score</a>
 				{% else %}<button type="submit" class="btn btn-danger">Submit</button>{% endif %}
 			</div>
 		</div>
-	</form>
+	</div>
+</form>
 {% endif %}
 {% endfor %}
 {% endblock %}

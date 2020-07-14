@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="alert alert-success" role="alert">
+  <h4 class="alert-heading">Great! You Completed The Quiz: {{quiz.quiz_name}}</h4>
+  <p>If you are able to see this message, then your quiz is sucessfully completed and evaluated. For any further queries, you can always contact us. Please note that any further attempt to change the quiz answers will not be recorded. The score remains the same</p>
+  <hr>
+  <h5><p class="mb-0">You scored {{final_score}} out of {{quiz.max_marks}}</p></h5>
+</div>
+<a href="{% url 'student_home' %}" class="btn btn-primary">Back To Homepage</a>
+{% endblock %}
