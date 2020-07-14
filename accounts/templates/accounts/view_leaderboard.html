@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="alert alert-info" role="alert">
+  <h5 class="text-center">This is the leaderboard of {{quiz.quiz_name}}.</h5>
+</div>
+<div class="p-3 mb-2 bg-light text-dark">
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Rank</th>
+      <th scope="col">Username</th>
+      <th scope="col">Marks</th>
+    </tr>
+  </thead>
+  <tbody>
+{%for item in leaderboard%}
+<tr>
+      <th scope="row">{{forloop.counter}}</th>
+      <td>{{item.student}}</td>
+      <td>{{item.marks}}</td>
+    </tr>
+{%endfor%}
+</tbody>
+</table>
+</div>
+{%if request.user.is_student%}
+<a href="{% url 'student_home' %}" class="btn btn-primary">Back To Homepage</a>
+{%else%}
+<a href="{% url 'teacher_home' %}" class="btn btn-primary">Back To Homepage</a>
+{%endif%}
+{%endblock%}

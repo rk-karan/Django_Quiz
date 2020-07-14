@@ -69,11 +69,11 @@
 	  <div class="col-6">
       {% if user.is_teacher %}
       <a href="{%url 'teacher_home'%}" class="navbar-brand d-flex align-items-center">
-        <strong>Welcome</strong>
+        <strong>Home</strong>
       </a>
       {% elif user.is_student %}
       <a href="{%url 'student_home'%}" class="navbar-brand d-flex align-items-center">
-        <strong>Welcome</strong>
+        <strong>Home</strong>
       </a>
       {% else %}
       <a href="{%url 'home'%}" class="navbar-brand d-flex align-items-center">

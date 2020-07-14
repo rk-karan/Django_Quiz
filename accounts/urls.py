@@ -43,4 +43,7 @@ urlpatterns = [
 
 #for calculating final score
 #    path('final_score/<int:quiz_pk>', views.final_score, name='final_score'),
+
+#for leaderboard
+    path('view_leaderboard/<int:quiz_pk>', views.view_leaderboard, name='view_leaderboard'),
 ]

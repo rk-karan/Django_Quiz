@@ -181,3 +181,8 @@ def calculate(request, quiz_pk, question_pk, num):      #New model created quest
 #    quiz = get_object_or_404(Quiz, pk=quiz_pk)
 #    final_score=get_object_or_404(quiz_info, quiz=quiz, student=request.user).marks
 #    return render(request, 'accounts/final_score.html', context={'quiz':quiz, 'final_score':final_score})
+
+def view_leaderboard(request, quiz_pk):
+    quiz = get_object_or_404(Quiz, pk=quiz_pk)
+    leaderboard_items=quiz_info.objects.all().filter(quiz=quiz).order_by('-marks')
+    return render(request, 'accounts/view_leaderboard.html', context={'leaderboard':leaderboard_items, 'quiz':quiz})
