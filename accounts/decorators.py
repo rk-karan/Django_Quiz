@@ -1,9 +1,27 @@
 from django.core.exceptions import PermissionDenied
+from .models import quiz_info, Quiz
+from django.shortcuts import get_object_or_404
 
 def teacher_quiz_required(function):
     def wrap(request, quiz_pk, question_pk):
         if request.user.is_authenticated == True and request.user.is_teacher == True:
             return function(request, quiz_pk, question_pk)
+        else:
+            raise PermissionDenied
+    return wrap
+    
+def quiz_access(function):
+    def wrap(request, pk):
+        if request.user.is_authenticated == True:
+            if request.user.is_teacher:
+                return function(request, pk)
+            else:
+                quiz=get_object_or_404(Quiz, pk=pk)
+                info=quiz_info.objects.all().filter(student=request.user, quiz=quiz)
+                if info.exists():
+                    return function(request, pk)
+                else:
+                    raise PermissionDenied
         else:
             raise PermissionDenied
     return wrap
