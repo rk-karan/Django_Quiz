@@ -6,7 +6,7 @@ from .form import studentSignUpForm, teacherSignUpForm, create_quiz, add_questio
 from django.contrib.auth.forms import AuthenticationForm
 from .models import User, Quiz, questions, answers, question_info, quiz_info
 
-from .decorators import student_required, teacher_required, student_login, teacher_login, teacher_quiz_required
+from .decorators import student_required, teacher_required, student_login, teacher_login, teacher_quiz_required, quiz_access
 
 def home(request):
     return render(request, 'accounts/home.html')
@@ -31,12 +31,13 @@ class signup_as_teacher(CreateView):  #CreateView creates an instance of the dat
         login(self.request, user)  #once registration is successful, the teacher is logged in
         return redirect('/accounts/teacher_home')  #redirecting to student home
 
-@teacher_required
+@quiz_access
 def quiz_view(request, pk):
     quiz = get_object_or_404(Quiz, pk = pk)             #removed creator check from here. will do that directly in quiz_view.html
     #added set and set1 as contexts to search through the libraries
     count=questions.objects.all().filter(quiz=quiz).count()
-    return render(request, 'accounts/quiz_view.html', context={'quiz':quiz, 'set':questions.objects.all().filter(quiz=quiz), 'set1':answers.objects.all(), 'count':count}) #filtering objects so forloop.counter can be used in quiz_view.html
+    info=question_info.objects.all().filter(student=request.user)
+    return render(request, 'accounts/quiz_view.html', context={'quiz':quiz, 'set':questions.objects.all().filter(quiz=quiz), 'set1':answers.objects.all(), 'count':count, 'info':info}) #filtering objects so forloop.counter can be used in quiz_view.html
 
 
 def signin(request):
