@@ -167,8 +167,8 @@ def calculate(request, quiz_pk, question_pk, num):      #New model created quest
         info.student = request.user
         if boo == 'true':
             info.is_correct = True
-            score=score+question.marks #if answer is correct, then update score
-            quiz_info.objects.filter(quiz=quiz, student=request.user).update(marks=score) #updating the attribute
+            score = score + question.marks #if answer is correct, then update score
+            quiz_info.objects.all().filter(quiz=quiz, student=request.user).update(marks=score) #updating the attribute
         info.save()
     return render(request, 'accounts/question_form.html', context={'quiz':quiz, 'set':questions.objects.all().filter(quiz=quiz), 'count':num, 'set1':answers.objects.all()})
 
