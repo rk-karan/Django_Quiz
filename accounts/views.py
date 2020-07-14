@@ -170,9 +170,13 @@ def calculate(request, quiz_pk, question_pk, num):      #New model created quest
             score = score + question.marks #if answer is correct, then update score
             quiz_info.objects.all().filter(quiz=quiz, student=request.user).update(marks=score) #updating the attribute
         info.save()
-    return render(request, 'accounts/question_form.html', context={'quiz':quiz, 'set':questions.objects.all().filter(quiz=quiz), 'count':num, 'set1':answers.objects.all()})
+    if num>quiz.number_of_questions:
+        final_score=get_object_or_404(quiz_info, quiz=quiz, student=request.user).marks
+        return render(request, 'accounts/final_score.html', context={'quiz':quiz, 'final_score':final_score})
+    else:
+        return render(request, 'accounts/question_form.html', context={'quiz':quiz, 'set':questions.objects.all().filter(quiz=quiz), 'count':num, 'set1':answers.objects.all()})
 
-def final_score(request, quiz_pk):
-    quiz = get_object_or_404(Quiz, pk=quiz_pk)
-    final_score=get_object_or_404(quiz_info, quiz=quiz, student=request.user).marks
-    return render(request, 'accounts/final_score.html', context={'quiz':quiz, 'final_score':final_score})
+#def final_score(request, quiz_pk):
+#    quiz = get_object_or_404(Quiz, pk=quiz_pk)
+#    final_score=get_object_or_404(quiz_info, quiz=quiz, student=request.user).marks
+#    return render(request, 'accounts/final_score.html', context={'quiz':quiz, 'final_score':final_score})
