@@ -35,7 +35,9 @@
 									<a href="/accounts/student_quiz_view/{{quiz.pk}}">
 										<button type="button" class="btn btn-sm btn-outline-secondary">Start Test</button>
 									</a>
+									<a href="{%url 'view_leaderboard' quiz.pk%}">
 									<button type="button" class="btn btn-sm btn-outline-secondary">Leader Board</button>
+									</a>
 								</div>
 							</div>
 						</div>
@@ -70,7 +72,9 @@
 									<a href="{%url 'quiz_view' quiz.quiz.pk%}">
 										<button type="button" class="btn btn-sm btn-outline-secondary">View Quiz</button>
 									</a>
+									<a href="{%url 'view_leaderboard' quiz.quiz.pk%}">
 									<button type="button" class="btn btn-sm btn-outline-secondary">Leader Board</button>
+									</a>
 								</div>
 							</div>
 						</div>
