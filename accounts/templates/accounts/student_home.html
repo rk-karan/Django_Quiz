@@ -32,11 +32,14 @@
 			</div>
 		</div>
 		</div>
+		{%empty%}
+			<!--message saying congratulations you have solved all available quizzes. check back later.-->
 		{%endfor%}
 	</div>
 </div>
 <br></br>
 <div class="container">
+	{% if set1|length != 0 %}
 	<h3>Attempted Quizzes</h3>
 	<div class="row row-cols-1 row-cols-md-3">
 		{%for quiz in set1%}
@@ -66,6 +69,7 @@
 		</div>
 		</div>
 		{%endfor%}
+	{%endif%}
 	</div>
 </div>
 </div>

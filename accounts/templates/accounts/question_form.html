@@ -29,7 +29,7 @@
 			</div>
 			<div class="col-4">
 				{% if count == quiz.number_of_questions %}
-				<a href="{% url 'final_score' quiz.pk %}" class="btn btn-danger">Get You Score</a>
+				<button type="submit" class="btn btn-danger">Get Your Final Score</button>
 				{% else %}<button type="submit" class="btn btn-danger">Submit</button>{% endif %}
 			</div>
 		</div>

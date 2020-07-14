@@ -42,5 +42,5 @@ urlpatterns = [
     path('calculate/<int:quiz_pk>/<int:question_pk>/<int:num>', views.calculate, name='calculate'),
 
 #for calculating final score
-    path('final_score/<int:quiz_pk>', views.final_score, name='final_score'),
+#    path('final_score/<int:quiz_pk>', views.final_score, name='final_score'),
 ]
