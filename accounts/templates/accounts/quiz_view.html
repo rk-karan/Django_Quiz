@@ -23,15 +23,28 @@
 			<h5><p> Marks: {{q.marks}}</p></h5>
 		</div>
 	</div>
+	<br>
 	{% for a in set1 %}
 	{% if a.question == q%}
 	{% if a.is_correct %}
-	<h5 class="font-weight-bold"><p class="text-left">{{a.text}}</p></h5>
+	<h5 class="font-weight-bold"><p class="float-left" style="display:inline">{{a.text}}</p><span class="float-left" style="opacity:0.5;">(correct answer)</span></h5>
 	{%else%}
-	<h5><p class="text-left">{{a.text}}</p></h5>
+	<h5><p class="float-left">{{a.text}}</p></h5>
 	{%endif%}
+	<br><br>
 	{%endif%}
 	{%endfor%}
+	{% if user.is_student %}
+		{% for i in info %}
+			{% if i.question == q %}
+				{% if i.is_correct %}
+					<span>You got this correct.</span>
+				{% else %}
+					<span>You got this wrong.</span>
+				{% endif %}
+			{% endif %}
+		{% endfor %}
+	{% endif %}
 	{% if quiz.creator == user %}<a href="/accounts/add_answers/{{quiz.id}}/{{q.id}}" class="btn btn-primary">Add Answers</a> {% endif %}
 </div>
 {% endfor %}
