@@ -1,5 +1,16 @@
 {%extends 'base.html'%}
 {% block content %}
+{% if quiz %}
+	<h3> Edit Quiz Here </h3>
+	<form action="{% url 'edit_quiz' quiz.pk %}" method="POST" novalidate>
+		{% csrf_token %}
+		<div class=“container”>
+		  {{form}}
+		  <br/>
+		  <input type="submit" value="Submit" class="btn btn-primary my-2">
+		</div>
+	</form>
+{% else %}
 <h3> Create Quiz Here </h3>
 <form action="{% url 'create_quiz' %}" method="POST" novalidate>
     {% csrf_token %}
@@ -9,4 +20,5 @@
       <input type="submit" value="Submit" class="btn btn-primary my-2">
     </div>
 </form>
+{% endif %}
 {% endblock %}

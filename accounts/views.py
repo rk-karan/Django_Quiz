@@ -5,8 +5,9 @@ from django.views.generic import CreateView
 from .form import studentSignUpForm, teacherSignUpForm, create_quiz, add_question_form, add_answers_form
 from django.contrib.auth.forms import AuthenticationForm
 from .models import User, Quiz, questions, answers, question_info, quiz_info
+from django.core.exceptions import PermissionDenied
 
-from .decorators import student_required, teacher_required, student_login, teacher_login, teacher_quiz_required, quiz_access
+from .decorators import student_required, teacher_required, student_login, teacher_login, teacher_quiz_required, quiz_access, creator_required
 
 def home(request):
     return render(request, 'accounts/home.html')
@@ -89,7 +90,7 @@ def create(request):
         quiz.max_marks = request.POST.get('max_marks')
         quiz.creator = request.user
         quiz.save()
-        return redirect('/accounts/quiz_view/'+str(quiz.pk))
+        return redirect('/accounts/manage_quiz/'+str(quiz.pk))
     return render(request, 'accounts/create_quiz.html', context={'form':create_quiz})
 
 @teacher_required
@@ -104,7 +105,7 @@ def add_questions(request, pk):
             question.marks = request.POST.get('marks')
             question.quiz = quiz
             question.save()
-            return redirect('/accounts/quiz_view/'+str(quiz.pk))
+            return redirect('/accounts/manage_quiz/'+str(quiz.pk))
         else:
             messages.error(request,"Either text or marks missing")
 
@@ -127,7 +128,7 @@ def add_answers(request, quiz_pk, question_pk):
 
         answer.question=question
         answer.save()
-        return redirect('/accounts/quiz_view/'+str(quiz.pk))
+        return redirect('/accounts/manage_quiz/'+str(quiz.pk))
     return render(request, 'accounts/add_answer.html', context={'form':add_answers_form, 'quiz':quiz, 'question':question})
 
 def student_quiz_view(request, quiz_pk):
@@ -186,3 +187,63 @@ def view_leaderboard(request, quiz_pk):
     quiz = get_object_or_404(Quiz, pk=quiz_pk)
     leaderboard_items=quiz_info.objects.all().filter(quiz=quiz).order_by('-marks')
     return render(request, 'accounts/view_leaderboard.html', context={'leaderboard':leaderboard_items, 'quiz':quiz})
+
+@creator_required
+def manage_quiz(request, pk):
+    quiz=get_object_or_404(Quiz, pk=pk)
+    set = questions.objects.all().filter(quiz=quiz)
+    set1 = answers.objects.all()
+    count=questions.objects.all().filter(quiz=quiz).count()
+    return render(request, 'accounts/manage_quiz.html', context={'quiz':quiz, 'set':set, 'set1':set1, 'count':count})
+
+@creator_required
+def delete_quiz(request, pk):
+    Quiz.objects.all().filter(pk=pk).delete()
+    return render(request, 'accounts/teacher_home.html', context = {'set':Quiz.objects.all()})
+    
+def delete_question(request, quiz_pk, question_pk):
+    question = get_object_or_404(questions, pk=question_pk)
+    if question.quiz.creator != request.user:
+        raise PermissionDenied
+    else:
+        question.delete()
+        quiz=get_object_or_404(Quiz, pk=quiz_pk)
+        set = questions.objects.all().filter(quiz=quiz)
+        set1 = answers.objects.all()
+        count=questions.objects.all().filter(quiz=quiz).count()
+        return render(request, 'accounts/manage_quiz.html', context={'quiz':quiz, 'set':set, 'set1':set1, 'count':count})
+
+@creator_required
+def edit_quiz(request, pk):
+    quiz = get_object_or_404(Quiz, pk=pk)
+    data = {'quiz_name':quiz.quiz_name, 'topic':quiz.topic, 'max_marks':quiz.max_marks, 'number_of_questions':quiz.number_of_questions}
+    form = create_quiz(initial=data)
+    if request.method=='POST':
+        quiz.quiz_name = request.POST.get('quiz_name')
+        quiz.topic = request.POST.get('topic')
+        quiz.number_of_questions = request.POST.get('number_of_questions')
+        quiz.max_marks = request.POST.get('max_marks')
+        quiz.save()
+        return redirect('/accounts/manage_quiz/'+str(quiz.pk))
+    return render(request, 'accounts/create_quiz.html', context={'form':form, 'quiz':quiz})
+
+def edit_question(request, quiz_pk, question_pk):
+    quiz = get_object_or_404(Quiz, pk=quiz_pk)
+    question = get_object_or_404(questions, pk=question_pk)
+    data = {'question':question.question, 'marks':question.marks}
+    form = add_question_form(initial=data)
+    if request.method=='POST':
+        question.question = request.POST.get('question')
+        question.marks = request.POST.get('marks')
+        question.save()
+        return redirect('/accounts/manage_quiz/'+str(quiz.pk))
+    return render(request, 'accounts/add_question.html', context={'form':form, 'quiz':quiz, 'question':question})
+
+def delete_answer(request, quiz_pk, answer_pk):
+    quiz = get_object_or_404(Quiz, pk=quiz_pk)
+    answer = get_object_or_404(answers, pk=answer_pk)
+    answer.delete()
+    set = questions.objects.all().filter(quiz=quiz)
+    set1 = answers.objects.all()
+    count=questions.objects.all().filter(quiz=quiz).count()
+    return render(request, 'accounts/manage_quiz.html', context={'quiz':quiz, 'set':set, 'set1':set1, 'count':count})

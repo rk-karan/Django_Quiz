@@ -10,14 +10,13 @@
 		<div class="col-md-4">
 				<div class="card mb-4 shadow-sm" style="width: 18rem;">
 					<div class="card-body">
-						<a href="/accounts/quiz_view/{{quiz.pk}}">
 						<h4 class="card-title">{{quiz.quiz_name}}</h4>
-						</a>
 						<div class="d-flex justify-content-between align-items-center">
 							<p class="text-left">Topic: {{quiz.topic}}</p>
 							<p class="text-right">Maximum Marks: {{quiz.max_marks}}</p>
 						</div>
-						<a href="{%url 'view_leaderboard' quiz.pk%}" class="btn btn-primary">Leaderboard</a>
+						<a href="{%url 'manage_quiz' quiz.pk%}" class="btn btn-primary">Manage Quiz</a>
+						<a href="{%url 'view_leaderboard' quiz.pk%}" class="btn btn-success">Leaderboard</a>
 					</div>
 				</div>
 		</div>
