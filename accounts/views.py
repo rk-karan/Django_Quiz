@@ -1,12 +1,13 @@
 from django.contrib.auth import login, logout,authenticate
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.views.generic import CreateView
-from .form import studentSignUpForm, teacherSignUpForm, create_quiz
+from .form import studentSignUpForm, teacherSignUpForm, create_quiz, add_question_form, add_answers_form
 from django.contrib.auth.forms import AuthenticationForm
-from .models import User, Quiz
+from .models import User, Quiz, questions, answers, question_info, quiz_info
+from django.core.exceptions import PermissionDenied
 
-from .decorators import student_required, teacher_required
+from .decorators import student_required, teacher_required, student_login, teacher_login, teacher_quiz_required, quiz_access, creator_required
 
 def home(request):
     return render(request, 'accounts/home.html')
@@ -31,6 +32,15 @@ class signup_as_teacher(CreateView):  #CreateView creates an instance of the dat
         login(self.request, user)  #once registration is successful, the teacher is logged in
         return redirect('/accounts/teacher_home')  #redirecting to student home
 
+@quiz_access
+def quiz_view(request, pk):
+    quiz = get_object_or_404(Quiz, pk = pk)             #removed creator check from here. will do that directly in quiz_view.html
+    #added set and set1 as contexts to search through the libraries
+    count=questions.objects.all().filter(quiz=quiz).count()
+    info=question_info.objects.all().filter(student=request.user)
+    return render(request, 'accounts/quiz_view.html', context={'quiz':quiz, 'set':questions.objects.all().filter(quiz=quiz), 'set1':answers.objects.all(), 'count':count, 'info':info}) #filtering objects so forloop.counter can be used in quiz_view.html
+
+
 def signin(request):
     if request.method=='POST':
         form = AuthenticationForm(data=request.POST)
@@ -47,31 +57,193 @@ def signin(request):
                     else:
                         return redirect('/accounts/teacher_home') #to teacher dashboard
                 else:
-                    messages.error(request,"User has been temporarily deactivated") #ivalid message display
+                    messages.error(request,"User has been temporarily deactivated") #invalid message display
             else:
-                messages.error(request,"Invalid username or password") #ivalid message display
+                messages.error(request,"Invalid username or password") #invalid message display
         else:
-                messages.error(request,"Invalid username or password") #ivalid message display
+            messages.error(request,"Invalid username or password") #invalid message display
     return render(request, 'accounts/signin.html', context={'form':AuthenticationForm()})
 
 def signout(request):
     logout(request)
     return render(request, 'accounts/home.html')
 
-@teacher_required
+@teacher_login
 def teacher_home(request):
-    return render(request, 'accounts/teacher_home.html', context = {'set':Quiz.objects.all()})      #passing variable set for accessing quizzes
+    return render(request, 'accounts/teacher_home.html', context = {'set':Quiz.objects.all()})
 
-@student_required
+@student_login
 def student_home(request):
-    return render(request, 'accounts/student_home.html')
-    
+    set1=quiz_info.objects.all().filter(student=request.user)
+    set2=Quiz.objects.all()
+    for i in set1:
+        set2=set2.exclude(pk=i.quiz.id)
+    return render(request, 'accounts/student_home.html', context = {'set1':set1,'set2':set2})
+
+@teacher_login
 def create(request):
     if request.method=='POST':
         quiz = Quiz()
+        quiz.quiz_name = request.POST.get('quiz_name')
         quiz.topic = request.POST.get('topic')
-        quiz.max_score = request.POST.get('max_score')
+        quiz.number_of_questions = request.POST.get('number_of_questions')
+        quiz.max_marks = request.POST.get('max_marks')
         quiz.creator = request.user
         quiz.save()
-        return redirect('/accounts/teacher_home')
+        return redirect('/accounts/manage_quiz/'+str(quiz.pk))
     return render(request, 'accounts/create_quiz.html', context={'form':create_quiz})
+
+@teacher_required
+def add_questions(request, pk):
+    quiz = get_object_or_404(Quiz, pk = pk, creator = request.user)
+
+    if request.method=='POST':
+        form = add_question_form(data=request.POST)
+        if form.is_valid():
+            question = questions()
+            question.question = request.POST.get('question')
+            question.marks = request.POST.get('marks')
+            question.quiz = quiz
+            question.save()
+            return redirect('/accounts/manage_quiz/'+str(quiz.pk))
+        else:
+            messages.error(request,"Either text or marks missing")
+
+    return render(request, 'accounts/add_question.html', context={'form':add_question_form(), 'quiz':quiz})
+
+@teacher_quiz_required  #go to decorators.py for more info
+def add_answers(request, quiz_pk, question_pk):
+    print("========", quiz_pk, question_pk)
+    quiz = get_object_or_404(Quiz, pk=quiz_pk, creator=request.user) #retrieving the quiz object
+    question = get_object_or_404(questions, pk=question_pk, quiz=quiz) #retireving the question object
+
+    if request.method=='POST':
+        answer=answers()
+        answer.text=request.POST.get('text')
+        #the output given when {{form}} is saved is 'on'. But we have to save 'True/False' for boolean field
+        if request.POST.get('is_correct')=='on':
+            answer.is_correct=True
+        else:
+            answer.is_correct=False
+
+        answer.question=question
+        answer.save()
+        return redirect('/accounts/manage_quiz/'+str(quiz.pk))
+    return render(request, 'accounts/add_answer.html', context={'form':add_answers_form, 'quiz':quiz, 'question':question})
+
+def student_quiz_view(request, quiz_pk):
+    quiz = get_object_or_404(Quiz, pk=quiz_pk)                      #This function simply provides the quiz info. No special functions or methods used.
+    return render(request, 'accounts/about_quiz.html', context={'quiz':quiz})
+
+def question_view(request, quiz_pk, num):                #This uses a custom made form made in html (Not in form.py). Form field returns whatever is specified in the 'value' attribute on submitting
+    quiz = get_object_or_404(Quiz, pk=quiz_pk)                      #'count' variable decides where the forloop.counter will stop and hence displays a new question everytime with increment in count
+
+    if quiz_info.objects.all().filter(student=request.user, quiz=quiz).exists():
+        pass #if certain instance already exists then pass
+    else:
+        student_quiz_info=quiz_info() #creating a quiz_info instance
+        student_quiz_info.student=request.user
+        student_quiz_info.quiz=quiz
+        student_quiz_info.marks=0
+        student_quiz_info.save() #saving the instance
+
+    return render(request, 'accounts/question_form.html', context={'quiz':quiz, 'set':questions.objects.all().filter(quiz=quiz), 'count':num, 'set1':answers.objects.all()})
+
+def calculate(request, quiz_pk, question_pk, num):      #New model created question_info. Stores whether a particular user got a question right or wrong
+    quiz = get_object_or_404(Quiz, pk=quiz_pk)          #If an object with specified user and specified question already exists a new object wont be created. So, you can not update your score by reattempting the quiz.
+    boo = request.POST.get('optradio')
+    print('=========', boo)
+
+    question=get_object_or_404(questions, pk=question_pk) #getting the question object
+
+    fetch_score=get_object_or_404(quiz_info, quiz=quiz, student=request.user)
+    score=fetch_score.marks
+
+    info = question_info.objects.all().filter(question=question, student=request.user)
+
+    if info.exists():
+        pass
+    else:
+        info = question_info()
+        info.question = question
+        info.student = request.user
+        if boo == 'true':
+            info.is_correct = True
+            score = score + question.marks #if answer is correct, then update score
+            quiz_info.objects.all().filter(quiz=quiz, student=request.user).update(marks=score) #updating the attribute
+        info.save()
+    if num>quiz.number_of_questions:
+        final_score=get_object_or_404(quiz_info, quiz=quiz, student=request.user).marks
+        return render(request, 'accounts/final_score.html', context={'quiz':quiz, 'final_score':final_score})
+    else:
+        return render(request, 'accounts/question_form.html', context={'quiz':quiz, 'set':questions.objects.all().filter(quiz=quiz), 'count':num, 'set1':answers.objects.all()})
+
+#def final_score(request, quiz_pk):
+#    quiz = get_object_or_404(Quiz, pk=quiz_pk)
+#    final_score=get_object_or_404(quiz_info, quiz=quiz, student=request.user).marks
+#    return render(request, 'accounts/final_score.html', context={'quiz':quiz, 'final_score':final_score})
+
+def view_leaderboard(request, quiz_pk):
+    quiz = get_object_or_404(Quiz, pk=quiz_pk)
+    leaderboard_items=quiz_info.objects.all().filter(quiz=quiz).order_by('-marks')
+    return render(request, 'accounts/view_leaderboard.html', context={'leaderboard':leaderboard_items, 'quiz':quiz})
+
+@creator_required
+def manage_quiz(request, pk):
+    quiz=get_object_or_404(Quiz, pk=pk)
+    set = questions.objects.all().filter(quiz=quiz)
+    set1 = answers.objects.all()
+    count=questions.objects.all().filter(quiz=quiz).count()
+    return render(request, 'accounts/manage_quiz.html', context={'quiz':quiz, 'set':set, 'set1':set1, 'count':count})
+
+@creator_required
+def delete_quiz(request, pk):
+    Quiz.objects.all().filter(pk=pk).delete()
+    return render(request, 'accounts/teacher_home.html', context = {'set':Quiz.objects.all()})
+    
+def delete_question(request, quiz_pk, question_pk):
+    question = get_object_or_404(questions, pk=question_pk)
+    if question.quiz.creator != request.user:
+        raise PermissionDenied
+    else:
+        question.delete()
+        quiz=get_object_or_404(Quiz, pk=quiz_pk)
+        set = questions.objects.all().filter(quiz=quiz)
+        set1 = answers.objects.all()
+        count=questions.objects.all().filter(quiz=quiz).count()
+        return render(request, 'accounts/manage_quiz.html', context={'quiz':quiz, 'set':set, 'set1':set1, 'count':count})
+
+@creator_required
+def edit_quiz(request, pk):
+    quiz = get_object_or_404(Quiz, pk=pk)
+    data = {'quiz_name':quiz.quiz_name, 'topic':quiz.topic, 'max_marks':quiz.max_marks, 'number_of_questions':quiz.number_of_questions}
+    form = create_quiz(initial=data)
+    if request.method=='POST':
+        quiz.quiz_name = request.POST.get('quiz_name')
+        quiz.topic = request.POST.get('topic')
+        quiz.number_of_questions = request.POST.get('number_of_questions')
+        quiz.max_marks = request.POST.get('max_marks')
+        quiz.save()
+        return redirect('/accounts/manage_quiz/'+str(quiz.pk))
+    return render(request, 'accounts/create_quiz.html', context={'form':form, 'quiz':quiz})
+
+def edit_question(request, quiz_pk, question_pk):
+    quiz = get_object_or_404(Quiz, pk=quiz_pk)
+    question = get_object_or_404(questions, pk=question_pk)
+    data = {'question':question.question, 'marks':question.marks}
+    form = add_question_form(initial=data)
+    if request.method=='POST':
+        question.question = request.POST.get('question')
+        question.marks = request.POST.get('marks')
+        question.save()
+        return redirect('/accounts/manage_quiz/'+str(quiz.pk))
+    return render(request, 'accounts/add_question.html', context={'form':form, 'quiz':quiz, 'question':question})
+
+def delete_answer(request, quiz_pk, answer_pk):
+    quiz = get_object_or_404(Quiz, pk=quiz_pk)
+    answer = get_object_or_404(answers, pk=answer_pk)
+    answer.delete()
+    set = questions.objects.all().filter(quiz=quiz)
+    set1 = answers.objects.all()
+    count=questions.objects.all().filter(quiz=quiz).count()
+    return render(request, 'accounts/manage_quiz.html', context={'quiz':quiz, 'set':set, 'set1':set1, 'count':count})

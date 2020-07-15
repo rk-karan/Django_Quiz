@@ -4,14 +4,36 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     is_student=models.BooleanField(default=False)
     is_teacher=models.BooleanField(default=False)
-    
+
 class student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    
+
 class teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    
+
 class Quiz(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quizzes')
     topic = models.CharField(max_length = 150)
-    max_score = models.IntegerField()
+    quiz_name=models.CharField(max_length=150)
+    max_marks = models.IntegerField()
+    number_of_questions = models.IntegerField()
+
+class questions(models.Model):
+    quiz=models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
+    question=models.TextField()
+    marks=models.IntegerField()
+
+class answers(models.Model):
+    question=models.ForeignKey(questions, on_delete=models.CASCADE, related_name='answers')
+    text=models.CharField(max_length=255)
+    is_correct=models.BooleanField('Correct answer', default=False)
+
+class question_info(models.Model):
+    question=models.ForeignKey(questions, on_delete=models.CASCADE, related_name='info')
+    student=models.ForeignKey(User, on_delete=models.CASCADE, related_name='info')
+    is_correct=models.BooleanField('Correct answer', default=False)
+
+class quiz_info(models.Model):
+    student=models.ForeignKey(User, on_delete=models.CASCADE, related_name='student_info')
+    quiz=models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='quiz_info')
+    marks=models.IntegerField()

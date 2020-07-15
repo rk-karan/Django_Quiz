@@ -67,9 +67,19 @@
   <div class="navbar navbar-dark bg-dark shadow-sm">
     <div class="container d-flex justify-content-between">
 	  <div class="col-6">
+      {% if user.is_teacher %}
+      <a href="{%url 'teacher_home'%}" class="navbar-brand d-flex align-items-center">
+        <strong>Home</strong>
+      </a>
+      {% elif user.is_student %}
+      <a href="{%url 'student_home'%}" class="navbar-brand d-flex align-items-center">
+        <strong>Home</strong>
+      </a>
+      {% else %}
       <a href="{%url 'home'%}" class="navbar-brand d-flex align-items-center">
         <strong>Welcome</strong>
       </a>
+      {% endif %}
 	  </div>
 	  <div class="col-4"></div>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,7 +95,7 @@
     <div class="container">
       <h1>Django Quiz Application</h1>
       <p class="lead text-muted">Welcome to our Django Quiz Platform. This platform was made by us as a project under Coding Club, IIT Guwahati.</p>
-      <p class="lead text-muted">Hope you enjoy your time quizing.</p>
+      <p class="lead text-muted">Hope you enjoy your time quizzing.</p>
 {%block content%}
 
 

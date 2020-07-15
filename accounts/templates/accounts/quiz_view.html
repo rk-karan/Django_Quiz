@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>{{quiz.quiz_name}}</h3>
+<h5>Topic: {{quiz.topic}}</h5>
+<h5>
+	<div class="d-flex justify-content-between">
+		<div>
+			Number of questions: {{quiz.number_of_questions}}
+		</div>
+		<div>
+			Maximum Marks: {{quiz.max_marks}}
+		</div>
+	</div>
+</h5>
+<br/>
+{% for q in set %}
+<div class="alert alert-success" role="alert">
+	<div class="d-flex justify-content-between">
+		<div>
+			<h5><p>Q.{{forloop.counter}} {{q.question}}</p></h5>
+		</div>
+		<div>
+			<h5><p> Marks: {{q.marks}}</p></h5>
+		</div>
+	</div>
+	<br>
+	{% for a in set1 %}
+	{% if a.question == q%}
+	{% if a.is_correct %}
+	<h5 class="font-weight-bold"><p class="float-left" style="display:inline">{{a.text}}</p><span class="float-left" style="opacity:0.5;">(correct answer)</span></h5>
+	{%else%}
+	<h5><p class="float-left">{{a.text}}</p></h5>
+	{%endif%}
+	<br><br>
+	{%endif%}
+	{%endfor%}
+	{% if user.is_student %}
+		{% for i in info %}
+			{% if i.question == q %}
+				{% if i.is_correct %}
+					<span>You got this correct.</span>
+				{% else %}
+					<span>You got this wrong.</span>
+				{% endif %}
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+	{% if quiz.creator == user %}<a href="/accounts/add_answers/{{quiz.id}}/{{q.id}}" class="btn btn-primary">Add Answers</a> {% endif %}
+</div>
+{% endfor %}
+<div class="d-flex justify-content-between">
+	<div>
+		{% if user.is_teacher %}<a href="/accounts/teacher_home" class="btn btn-primary">Back</a>{% endif %}
+		{% if user.is_student %}<a href="/accounts/student_home" class="btn btn-primary">Back</a>{% endif %}
+	</div>
+	<div>
+		{% if quiz.creator == user %}
+		{% if count < quiz.number_of_questions%}
+		<a href="/accounts/add_questions/{{quiz.pk}}" class="btn btn-primary">Add Questions</a>
+		{% else %}
+		<div class="alert alert-danger" role="alert"> Required Number of questions are already added</div>
+		{% endif %}
+		{% endif %}
+	</div>
+</div>
+{% endblock %}
