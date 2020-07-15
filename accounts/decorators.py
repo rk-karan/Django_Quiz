@@ -57,3 +57,12 @@ def student_login(function):
         else:
             raise PermissionDenied         #Direct function which can be included. gives out an exception
     return wrap
+    
+def creator_required(function):
+    def wrap(request, pk):
+        quiz = get_object_or_404(Quiz, pk=pk)
+        if request.user == quiz.creator:
+            return function(request, pk)
+        else:
+            raise PermissionDenied
+    return wrap
