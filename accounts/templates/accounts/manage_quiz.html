@@ -1,0 +1,62 @@
+<style>
+	a span {display:none;}
+	a:hover span {display:block;}
+</style>
+
+{% extends 'base.html' %}
+{% block content %}
+<h3>{{quiz.quiz_name}}</h3>
+<h5>Topic: {{quiz.topic}}</h5>
+<h5>
+	<div class="d-flex justify-content-between">
+		<div>
+			Number of questions: {{quiz.number_of_questions}}
+		</div>
+		<div>
+			Maximum Marks: {{quiz.max_marks}}
+		</div>
+	</div>
+</h5>
+<br/>
+{% for q in set %}
+<div class="alert alert-success" role="alert">
+	<div class="d-flex justify-content-between">
+		<div>
+			<h5><p>Q.{{forloop.counter}} {{q.question}}</p></h5>
+		</div>
+		<div>
+			<h5><p> Marks: {{q.marks}}</p></h5>
+		</div>
+	</div>
+	<br>
+	{% for a in set1 %}
+	{% if a.question == q%}
+	<a href="{% url 'delete_answer' quiz.pk a.pk%}" style="color:black">
+	<span>Delete this answer</span>
+	{% if a.is_correct %}
+	<h5 class="font-weight-bold"><p class="float-left" style="display:inline">{{a.text}}</p><p class="float-left" style="opacity:0.5;">(correct answer)</p></h5>
+	{%else%}
+	<h5><p class="float-left">{{a.text}}</p></h5>
+	{%endif%}
+	</a>
+	<br><br>
+	{%endif%}
+	{%endfor%}
+	<a href="/accounts/edit_question/{{quiz.id}}/{{q.id}}" class="btn btn-primary">Edit Question</a>
+	<a href="/accounts/add_answers/{{quiz.id}}/{{q.id}}" class="btn btn-success">Add Answers</a>
+	<a href="/accounts/delete_question/{{quiz.id}}/{{q.id}}" class="btn btn-danger">Delete Question</a>
+</div>
+{% endfor %}
+<div class="d-flex justify-content-between">
+	<div>
+		<a href="/accounts/teacher_home" class="btn btn-primary">Back</a>
+	</div>
+	<div>
+		<a href="/accounts/edit_quiz/{{quiz.id}}" class="btn btn-primary">Edit Quiz Details</a>
+		{% if count < quiz.number_of_questions%}
+			<a href="/accounts/add_questions/{{quiz.pk}}" class="btn btn-primary">Add Questions</a>
+		{% endif %}
+		<a href="/accounts/delete_quiz/{{quiz.id}}" class="btn btn-danger">Delete Quiz</a>
+	</div>
+</div>
+{% endblock %}
