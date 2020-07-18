@@ -75,7 +75,7 @@ def teacher_home(request):
 @student_login
 def student_home(request):
     set1=quiz_info.objects.all().filter(student=request.user)
-    set2=Quiz.objects.all()
+    set2=Quiz.objects.all().filter(is_live=True)
     for i in set1:
         set2=set2.exclude(pk=i.quiz.id)
     return render(request, 'accounts/student_home.html', context = {'set1':set1,'set2':set2})
@@ -208,6 +208,8 @@ def delete_question(request, quiz_pk, question_pk):
     else:
         question.delete()
         quiz=get_object_or_404(Quiz, pk=quiz_pk)
+        quiz.is_live = False
+        quiz.save()
         set = questions.objects.all().filter(quiz=quiz)
         set1 = answers.objects.all()
         count=questions.objects.all().filter(quiz=quiz).count()
@@ -243,6 +245,22 @@ def delete_answer(request, quiz_pk, answer_pk):
     quiz = get_object_or_404(Quiz, pk=quiz_pk)
     answer = get_object_or_404(answers, pk=answer_pk)
     answer.delete()
+    set = questions.objects.all().filter(quiz=quiz)
+    set1 = answers.objects.all()
+    count=questions.objects.all().filter(quiz=quiz).count()
+    return render(request, 'accounts/manage_quiz.html', context={'quiz':quiz, 'set':set, 'set1':set1, 'count':count})
+
+@creator_required
+def make_live(request, pk):
+    quiz = get_object_or_404(Quiz, pk=pk)
+    question_set = questions.objects.all().filter(quiz = quiz)
+    score = 0
+    for question in question_set:
+        score += question.marks
+    print(score)
+    if quiz.max_marks == score:
+        quiz.is_live = True
+        quiz.save()
     set = questions.objects.all().filter(quiz=quiz)
     set1 = answers.objects.all()
     count=questions.objects.all().filter(quiz=quiz).count()
