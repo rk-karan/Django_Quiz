@@ -46,25 +46,26 @@ urlpatterns = [
 
 #for leaderboard
     path('view_leaderboard/<int:quiz_pk>', views.view_leaderboard, name='view_leaderboard'),
-    
+
 #for managing created quizzes
     path('manage_quiz/<int:pk>', views.manage_quiz, name='manage_quiz'),
-    
+
 #for deleting quiz
     path('delete_quiz/<int:pk>', views.delete_quiz, name='delete_quiz'),
-    
+
 #for deleting questions
     path('delete_question/<int:quiz_pk>/<int:question_pk>', views.delete_question, name='delete_question'),
-    
+
 #for editing quizzes
     path('edit_quiz/<int:pk>', views.edit_quiz, name='edit_quiz'),
-    
+
 #for editing questions
     path('edit_question/<int:quiz_pk>/<int:question_pk>', views.edit_question, name='edit_question'),
 
 #for deleting answers
     path('delete_answer/<int:quiz_pk>/<int:answer_pk>', views.delete_answer, name='delete_answer'),
-    
+
 #for making quiz live
     path('make_live/<int:pk>', views.make_live, name='make_live'),
+
 ]
