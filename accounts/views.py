@@ -265,3 +265,6 @@ def make_live(request, pk):
     set1 = answers.objects.all()
     count=questions.objects.all().filter(quiz=quiz).count()
     return render(request, 'accounts/manage_quiz.html', context={'quiz':quiz, 'set':set, 'set1':set1, 'count':count})
+
+def about_us(request):
+    return render(request, 'accounts/about_us.html')
