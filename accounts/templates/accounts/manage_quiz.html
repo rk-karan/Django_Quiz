@@ -52,6 +52,16 @@
 		<a href="/accounts/teacher_home" class="btn btn-primary">Back</a>
 	</div>
 	<div>
+		{% if count == quiz.number_of_questions %}
+			{% if quiz.is_live == False %}
+				<a href="{% url 'make_live' quiz.pk %}" class="btn btn-primary">Make Quiz Live</a>
+				<h6 class="alert alert-danger">Make sure marks per question add up to {{quiz.max_marks}}</h6>
+			{% endif %}
+		{% else %}
+			Please add required number of questions.
+		{% endif %}
+	</div>
+	<div>
 		<a href="/accounts/edit_quiz/{{quiz.id}}" class="btn btn-primary">Edit Quiz Details</a>
 		{% if count < quiz.number_of_questions%}
 			<a href="/accounts/add_questions/{{quiz.pk}}" class="btn btn-primary">Add Questions</a>
