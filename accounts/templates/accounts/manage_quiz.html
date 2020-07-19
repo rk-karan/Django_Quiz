@@ -56,8 +56,6 @@
 			{% if quiz.is_live == False %}
 				<a href="{% url 'make_live' quiz.pk %}" class="btn btn-primary">Make Quiz Live</a>
 				<h6 class="alert alert-danger">Make sure marks per question add up to {{quiz.max_marks}}</h6>
-			{% else %}
-				<a href="#" class="btn btn-primary">Take Quiz Off</a>
 			{% endif %}
 		{% else %}
 			Please add required number of questions.
