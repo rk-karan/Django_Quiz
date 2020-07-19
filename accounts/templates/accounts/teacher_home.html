@@ -17,6 +17,9 @@
 						</div>
 						<a href="{%url 'manage_quiz' quiz.pk%}" class="btn btn-primary">Manage Quiz</a>
 						<a href="{%url 'view_leaderboard' quiz.pk%}" class="btn btn-success">Leaderboard</a>
+						{% if quiz.is_live == False %}
+							<h6 class="alert alert-danger">Quiz isn't Live</h6>
+						{% endif %}
 					</div>
 				</div>
 		</div>

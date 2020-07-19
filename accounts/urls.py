@@ -64,4 +64,7 @@ urlpatterns = [
 
 #for deleting answers
     path('delete_answer/<int:quiz_pk>/<int:answer_pk>', views.delete_answer, name='delete_answer'),
+    
+#for making quiz live
+    path('make_live/<int:pk>', views.make_live, name='make_live'),
 ]
